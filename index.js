@@ -4,18 +4,20 @@ const app = express();
 const morgan = require('morgan');
 const spotifyApi = require('./lib/spotifyWebApi');
 //local require\
-const db=require('./db');
+const db = require('./db');
 const router = require('./router.js');
 const nconf = require('nconf');
 
 //don't show the log when it is test
-if(process.env.NODE_ENV !== 'test') {
-    //use morgan to log at command line
-    // app.use(morgan('combined')); //'combined' outputs the Apache style LOGs
+if (process.env.NODE_ENV !== 'test') {
+  //use morgan to log at command line
+  // app.use(morgan('combined')); //'combined' outputs the Apache style LOGs
 }
 
+
 app.use(bodyParser.json());
-app.use(function(req, res, next){
+app.use(morgan('dev'))
+app.use(function (req, res, next) {
   req.spotifyApi = spotifyApi;
   next();
 });
