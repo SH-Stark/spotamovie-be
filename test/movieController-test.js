@@ -7,12 +7,11 @@ let chaiHttp = require('chai-http');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const PassThrough = require('stream').PassThrough;
-const server = require('../index');
+// const server = require('../index');
 let should = chai.should();
 const nconf = require('../config/nconf.js');
 const spotifyWebApi = require('spotify-web-api-node');
 const UserSchema =require('../models/User');
-
 const userController = require('../controllers/userController');
 const movieController = require('../controllers/movieController');
 const Stub = require('./stub');
@@ -21,31 +20,27 @@ const mocks = require('./mocks');
 chai.use(chaiHttp);
 chai.use(sinonChai);
 
-let stubFind;
-let stubRatedMovies;
-let stubUpdate;
-let stubGet;
-let res={};
-let req={};
+let stubFind, stubRatedMovies, stubUpdate, stubGet;
+let res={}, req={};
 
-describe('movie controller:', () => {
+describe('Movie Controller :', () => {
   beforeEach(() => {
-    stubGet=sinon
+    stubGet = sinon
     .stub(request, 'get')
     .yields(null, null, JSON.stringify({
       results:[
-        {id:'1'   ,poster_path:true},
-        {id:'2'   ,poster_path:true},
-        {id:'3'  ,poster_path:true},
-        {id:'4'  ,poster_path:true},
-        {id:'5' ,poster_path:true},
-        {id:'6' ,poster_path:true},
-        {id:'7' ,poster_path:true},
-        {id:'8'  ,poster_path:true},
-        {id:'9' ,poster_path:true},
-        {id:'10' ,poster_path:true},
-        {id:'11' ,poster_path:true},
-        {id:'12' ,poster_path:true},
+        {id:'1',poster_path:true},
+        {id:'2',poster_path:true},
+        {id:'3',poster_path:true},
+        {id:'4',poster_path:true},
+        {id:'5',poster_path:true},
+        {id:'6',poster_path:true},
+        {id:'7',poster_path:true},
+        {id:'8',poster_path:true},
+        {id:'9',poster_path:true},
+        {id:'10',poster_path:true},
+        {id:'11',poster_path:true},
+        {id:'12',poster_path:true},
         {id:'13',poster_path:true},
         {id:'14',poster_path:true},
         {id:'15',poster_path:true},
@@ -70,7 +65,6 @@ describe('movie controller:', () => {
     Stub.removeStub(stubRatedMovies);
     Stub.removeStub(stubUpdate);
     Stub.removeStub(stubGet);
-
   });
 
 
@@ -87,9 +81,10 @@ describe('movie controller:', () => {
         done(err);
       }
     };
-
     movieController.survey(req, res);
   });
+
+
   it('should return correct number of movies for exising user', (done) => {
     mocks.userDocNew.firstLogin=false;
     res.send = (object) => {
@@ -102,9 +97,10 @@ describe('movie controller:', () => {
         done(err);
       }
     };
-
     movieController.survey(req, res);
   });
+
+
   it('should return not repeat movies on survey', (done) => {
     mocks.userDocNew.firstLogin=true;
     let res={};
@@ -120,12 +116,12 @@ describe('movie controller:', () => {
     };
     movieController.survey(req, res);
   });
-  it('should return not repeat movies on recommendation', (done) => {
-    let res={};
 
+
+  it('should not return repeated movies on recommendation', (done) => {
+    let res={};
     mocks.userDocNew.alreadyRecommended=['4','5']
     res.send = (object) => {
-      console.log(object, ": object");
       try {
         object.should.be.a('object');
         object.should.have.property('movieId');
@@ -137,7 +133,9 @@ describe('movie controller:', () => {
     };
     movieController.recommendation(req, res);
   });
-  it('should return not repeat movies on raccoon recommendation', (done) => {
+
+
+  it('should not return repeated movies on raccoon recommendation', (done) => {
     let res={};
     const stubRecomendation=Stub.createStub(raccoon,'recommendFor',[
      '6',
@@ -146,7 +144,6 @@ describe('movie controller:', () => {
    ])
     mocks.userDocNew.alreadyRecommended=['4','5','6']
     res.send = (object) => {
-      console.log(object, ": object");
       try {
         object.should.be.a('object');
         object.should.have.property('movieId');
@@ -157,8 +154,6 @@ describe('movie controller:', () => {
       }
     };
     movieController.recommendation(req, res);
-
     Stub.removeStub(stubRecomendation);
-
   });
 })

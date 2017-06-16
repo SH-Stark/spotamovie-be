@@ -10,7 +10,6 @@ const server = require('../index');
 let should = chai.should();
 const nconf = require('../config/nconf.js');
 const spotifyWebApi = require('spotify-web-api-node');
-
 const UserSchema =require('../models/User');
 const loginController = require('../controllers/loginController');
 const Stub = require('./stub');
@@ -21,21 +20,16 @@ chai.use(sinonChai);
 
 let stubAuth, stubGetMe, stubGetUserPlaylists, stubGetPlaylistTracks;
 
-describe('Login:', () => {
+describe('Login :', () => {
   let request, response;
   beforeEach(() => {
     request = {
       spotifyApi: new spotifyWebApi(mocks.spotifyObj)
     };
-
     stubAuth = Stub.createStub(request.spotifyApi, 'authorizationCodeGrant', mocks.authResponseObj);
-
     stubGetMe = Stub.createStub(request.spotifyApi, 'getMe', mocks.userProfile);
-
     stubGetUserPlaylists = Stub.createStub(request.spotifyApi, 'getUserPlaylists', mocks.playlists);
-
     stubGetPlaylistTracks = Stub.createStub(request.spotifyApi, 'getPlaylistTracks', mocks.tracks);
-
     response = {};
   });
 
@@ -44,13 +38,11 @@ describe('Login:', () => {
     Stub.removeStub(stubGetMe);
     Stub.removeStub(stubGetUserPlaylists);
     Stub.removeStub(stubGetPlaylistTracks);
-
     response = {};
   });
 
-  it('login should succeed given proper user credentials', (done) => {
+  it('should succeed given proper user credentials', (done) => {
     request.body = mocks.authCodeBody;
-
     response.send = (obj) => {
       try {
         response.status.should.be.eq(200);
@@ -67,16 +59,13 @@ describe('Login:', () => {
           if (err) throw err;
         });
       }
-
     };
-
     loginController.login(request, response);
-
   });
 
-  it('login should fail without an authorization code', (done) => {
-    request.body = {};
 
+  it('should fail without an authorization code', (done) => {
+    request.body = {};
     response.sendStatus = (status) => {
       try {
         status.should.be.eq(400);
@@ -85,17 +74,15 @@ describe('Login:', () => {
         done(err);
       }
     };
-
     loginController.login(request, response);
-
   });
 
-  it('login should fail without proper Spotify API credentials', (done) => {
+
+  it('should fail without proper Spotify API credentials', (done) => {
     request = {
       body: mocks.authCodeBody,
       spotifyApi: new spotifyWebApi(mocks.spotifyObjInvalid)
     };
-
     response.sendStatus = (status) => {
       try {
         status.should.be.eq(500);
@@ -104,18 +91,14 @@ describe('Login:', () => {
         done(err);
       }
     };
-
     loginController.login(request, response);
-
   });
 
-  it('login should fail if authorization fails', (done) => {
+
+  it('should fail if authorization fails', (done) => {
     request.body = mocks.authCodeBody;
-
     Stub.removeStub(stubAuth);
-
     stubAuth = Stub.createStub(request.spotifyApi, 'authorizationCodeGrant', mocks.spotifyAuthErrReponse);
-
     response.send = (obj) => {
       try {
         response.status.should.be.eq(400);
@@ -124,11 +107,8 @@ describe('Login:', () => {
       } catch (err) {
         done(err);
       }
-
     };
-
     loginController.login(request, response);
-
   });
 
 });

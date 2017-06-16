@@ -15,23 +15,22 @@ const mocks = require('./mocks');
 chai.use(chaiHttp);
 chai.use(sinonChai);
 
-describe('Users:', () => {
+describe('Users :', () => {
   let request, response;
   beforeEach(() => {
     request = {};
     response = {};
   });
-
   afterEach(() => {
     response = {};
   });
 
-  it('it should save a new user record to the database given valid data', (done) => {
+
+  it('should save new user record to database given valid data', (done) => {
     const newUser = {
       body: mocks.userInfo
     };
     const token = mocks.accessToken;
-
     userController.newUser(newUser, token)
     .then((user)=>{
       try {
@@ -60,16 +59,14 @@ describe('Users:', () => {
     });
   });
 
-  it('it should retrieve a user document given a valid user token', (done) => {
+
+  it('should retrieve user document given a valid user token', (done) => {
     request.headers = mocks.authHeader;
-
     const newUser = new UserSchema(mocks.userObj);
-
     newUser.save((err) => {
       if (err) throw err;
       userController.me(request, response);
     });
-
     response.send = (user) => {
       try {
         response.status.should.be.eq(200);
@@ -92,14 +89,12 @@ describe('Users:', () => {
         });
       }
     };
-
   });
 
-  it('it should update a user document', (done) => {
+
+  it('should update user document', (done) => {
     const newUser = new UserSchema(mocks.userObj);
-
     const updateData = mocks.createObj('name', 'Johnathan Dow');
-
     newUser.save((err) => {
       if (err) throw err;
       userController.updateUser(mocks.spotifyId, updateData)
@@ -120,17 +115,14 @@ describe('Users:', () => {
         }
       });
     });
-
   });
 
-  it('it should not update a user document if given a field that isn\'t part of the schema', (done) => {
+
+  it('should not update user document if given field that isn\'t part of schema', (done) => {
     const newUser = new UserSchema(mocks.userObj);
-
     const updateData = mocks.createObj('nickname', 'JD');
-
     newUser.save((err) => {
       if (err) throw err;
-
       userController.updateUser(mocks.spotifyId, updateData)
       .then((user) => {
         try {
@@ -148,12 +140,11 @@ describe('Users:', () => {
         }
       });
     });
-
   });
 
-  it('it should return an error when missing authorization header in request', (done) => {
-    request.headers = mocks.authHeaderMissing;
 
+  it('should return an error when missing authorization header in request', (done) => {
+    request.headers = mocks.authHeaderMissing;
     response.sendStatus = (status) => {
       try {
         status.should.be.eq(400);
@@ -162,14 +153,12 @@ describe('Users:', () => {
         done(err);
       }
     };
-
     userController.me(request, response);
-
   });
 
-  it('it should return an error if user with given token doesn\'t exist', (done) => {
-    request.headers = mocks.authHeader;
 
+  it('should return an error if given token doesn\'t exist', (done) => {
+    request.headers = mocks.authHeader;
     response.sendStatus = (status) => {
       try {
         status.should.be.eq(401);
@@ -178,16 +167,13 @@ describe('Users:', () => {
         done(err);
       }
     };
-
     userController.me(request, response);
-
   });
 
-  it('it should return an error if the given token has expired', (done) => {
-    request.headers = mocks.authHeader;
 
+  it('should return an error if given token expired', (done) => {
+    request.headers = mocks.authHeader;
     const stubFind = Stub.createStub(UserSchema, 'find', [mocks.userDocOld]);
-
     response.sendStatus = (status) => {
       try {
         status.should.be.eq(401);
@@ -196,40 +182,34 @@ describe('Users:', () => {
         done(err);
       }
     };
-
     userController.me(request, response);
-
     Stub.removeStub(stubFind);
-
   });
 
-  it('it should produce an error when missing Spotify ID', (done) => {
+
+  it('should return an error when missing Spotify ID', (done) => {
     const newUser = mocks.userInfoInvalid1;
-
     const user = new UserSchema(newUser);
-
     user.validate(error => {
       error.errors.spotifyId.should.exist;
       done();
     });
   });
 
-  it('it should produce an error when missing user token', (done) => {
+
+  it('should return an error when missing user token', (done) => {
     const newUser = mocks.userInfoInvalid2;
-
     const user = new UserSchema(newUser);
-
     user.validate(error => {
       error.errors.userToken.should.exist;
       done();
     });
   });
 
-  it('it should produce an error when missing loginDate', (done) => {
+
+  it('should return an error when missing loginDate', (done) => {
     const newUser = mocks.userInfoInvalid3;
-
     const user = new UserSchema(newUser);
-
     user.validate(error => {
       error.errors.loginDate.should.exist;
       done();

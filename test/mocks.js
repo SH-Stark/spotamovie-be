@@ -1,4 +1,3 @@
-
 const mocks = {};
 
 mocks.createObj = (property, value) => {
